@@ -1,4 +1,4 @@
-import { loadEnv, defineConfig } from '@medusajs/framework/utils'
+import { loadEnv, defineConfig, Modules } from '@medusajs/framework/utils'
 import { execSync } from 'child_process'
 import path from 'path'
 
@@ -121,9 +121,18 @@ if (S3_BUCKET) {
 // REDIS_URL set; local dev keeps the in-memory defaults.
 if (process.env.NODE_ENV === "production" && process.env.REDIS_URL) {
   modules.push(
-    { resolve: "@medusajs/event-bus-redis", options: { redisUrl: process.env.REDIS_URL } },
-    { resolve: "@medusajs/cache-redis", options: { redisUrl: process.env.REDIS_URL } },
     {
+      key: Modules.EVENT_BUS,
+      resolve: "@medusajs/event-bus-redis",
+      options: { redisUrl: process.env.REDIS_URL },
+    },
+    {
+      key: Modules.CACHE,
+      resolve: "@medusajs/cache-redis",
+      options: { redisUrl: process.env.REDIS_URL },
+    },
+    {
+      key: Modules.WORKFLOW_ENGINE,
       resolve: "@medusajs/workflow-engine-redis",
       options: { redis: { url: process.env.REDIS_URL } },
     }

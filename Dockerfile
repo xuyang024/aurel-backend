@@ -9,6 +9,7 @@ WORKDIR /app
 RUN apt-get update && apt-get install -y python3 make g++ \
   && rm -rf /var/lib/apt/lists/*
 
+# Deps first (cache-friendly): only re-runs npm ci when manifests change.
 COPY package*.json turbo.json ./
 COPY apps/backend/package*.json ./apps/backend/
 RUN npm ci
@@ -25,9 +26,14 @@ WORKDIR /app/server
 RUN apt-get update && apt-get install -y python3 make g++ \
   && rm -rf /var/lib/apt/lists/*
 
+# Install prod deps first, keyed on the built server's package.json — this layer
+# is cached across builds when deps don't change (skips the slow ~15min install).
+COPY --from=builder /app/apps/backend/.medusa/server/package.json ./package.json
+RUN npm install --omit=dev
+
+# Then the built server + the boot-time settings loader.
 COPY --from=builder /app/apps/backend/.medusa/server ./
 COPY --from=builder /app/apps/backend/src/lib/load-settings.cjs ./src/lib/load-settings.cjs
-RUN npm install --omit=dev
 
 EXPOSE 9000
 CMD ["sh", "-c", "npx medusa db:migrate && npm run start"]
