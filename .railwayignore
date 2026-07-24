@@ -1,0 +1,15 @@
+# Railpack builds from source on Railway — keep node_modules, build output,
+# and secrets out of the upload.
+node_modules
+**/node_modules
+.medusa
+**/.medusa
+.env
+.env.*
+!.env.production.template
+.turbo
+**/.turbo
+*.log
+图片
+Dockerfile.bak
+railway.json.bak

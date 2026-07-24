@@ -1,0 +1,13 @@
+.git
+node_modules
+**/node_modules
+.turbo
+**/.turbo
+*.log
+**/.env
+**/.env.*
+!**/.env.production.template
+图片
+# Exclude everything under .medusa EXCEPT the prebuilt server we ship.
+apps/backend/.medusa/*
+!apps/backend/.medusa/server
